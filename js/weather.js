@@ -1,25 +1,26 @@
 const apiKey = `0dc6M0X222AxkTeB8BcbN8A9DdiOWEnm`
+const baseUrl = `http://dataservice.accuweather.com/`
 
-
-let url = cityName => {
-    return `http://dataservice.accuweather.com/locations/v1/cities/search?apikey=${apiKey}&q=${cityName}`
+let getCityUrl = cityName => {
+    return `${baseUrl}locations/v1/cities/search?apikey=${apiKey}&q=${cityName}`
 }
 
-let getCityData = async cityName => {
+const getWeatherUrl = ({Key}) => 
+`${baseUrl}currentconditions/v1/${Key}?apikey=${apiKey}`
+
+let fetchData = async url => {
 
     try {
-        const cityUrl = url(cityName)
-        const request = await fetch(cityUrl)
+        
+        const response = await fetch(url)
     
-
-        if(!request.ok){
+        if(!response.ok){
 
             throw new Error(`Nao foi possivel obter os dados`)
 
         }
         
-        let [ cityData ] = await request.json()
-        return cityData
+        return response.json()
 
     } catch({name, message}){ 
 
@@ -29,35 +30,14 @@ let getCityData = async cityName => {
     
 }
 
+const getCityData = cityName => fetchData(getCityUrl(cityName))
 
-let getCityWeather = async cityName => {
+const getCityWeather = async cityName => {
 
-    try {
+    const [ cityData ]= await getCityData(cityName)
+    return fetchData(getWeatherUrl(cityData))
 
-        const { Key } = await getCityData(cityName)
-        const cityWeatherUrl = `http://dataservice.accuweather.com/currentconditions/v1/${Key}?apikey=${apiKey}`
-        const request = await fetch(cityWeatherUrl)
-    
-
-        if(!request.ok){
-
-            throw new Error(`Nao foi possivel obter os dados`)
-
-        }
-        
-        let [ cityWeatherData ] = await request.json()
-        debugger
-        return cityWeatherData
-
-    } catch({name, message}){ 
-
-      alert(`${name}: ${message}`)
-        
-    }
-    
 }
 
-
-getCityWeather(`Juazeiro`)
-
+getCityWeather(`Sao jose do egito`).then(console.log)
 
