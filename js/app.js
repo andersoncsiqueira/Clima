@@ -8,36 +8,38 @@ let timeImg = document.querySelector(`[data-js="time"]`)
 const cityCard = document.querySelector(`[data-js="citycard"]`)
 const timeIconContain = document.querySelector(`[data-js="time-icon"]`)
 
-cityForm.addEventListener(`submit`, async event => {
-    event.preventDefault()
 
+const insertDatasWeatherCity = async (nameCity) => {
 
-
-
-    let inputValue = event.target.city.value
-
-    let [{Key, LocalizedName}] = await getCityData(inputValue)
+    let [{Key, LocalizedName}] = await getCityData(nameCity)
     let [{WeatherText,Temperature, IsDayTime,WeatherIcon}] = await getCityWeather(Key)
 
-if(cityCard.classList.contains(`d-none`)){
-        cityCard.classList.remove(`d-none`)
-    }
 
-    let timeIcon = `<img src="./src/icons/${WeatherIcon}.svg"/>`
+    cityCard.classList.contains(`d-none`)?cityCard.classList.remove(`d-none`):none
 
-    if(IsDayTime) {
-       timeImg.src = (`./src/day.svg`)
-    } else{
-       timeImg.src = (`./src/night.svg`)
-    }
+
+   let timeIcon = `<img src="./src/icons/${WeatherIcon}.svg"/>`
+
+   timeImg.src = IsDayTime?`./src/day.svg`:`./src/night.svg`
 
     timeIconContain.innerHTML = timeIcon
     
-cityNameContainer.textContent = LocalizedName
-cityWeatherContainer.textContent = WeatherText
-cityTemperatureContainer.textContent = Temperature.Metric.Value
+    cityNameContainer.textContent = LocalizedName
+    cityWeatherContainer.textContent = WeatherText
+    cityTemperatureContainer.textContent = Temperature.Metric.Value
 
 
-console.log(WeatherText,Temperature.Metric.Value)
+
+}
+
+cityForm.addEventListener(`submit`, event => {
+    event.preventDefault()
+
+let nameCity = event.target.city.value
+
+   
+insertDatasWeatherCity(nameCity)
+
+
 cityForm.reset()
 })
